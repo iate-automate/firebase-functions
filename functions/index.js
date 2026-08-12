@@ -73,8 +73,7 @@ app.post('/files', async (req, res) => {
                 metadata: {
                     firebaseStorageDownloadTokens: uuidv4()
                 }
-            },
-            public: true
+            }
         });
 
         // Pipe the Airtable stream into Firebase Storage
@@ -315,8 +314,7 @@ app.post('/pdf/contract', async (req, res) => {
           metadata: {
               firebaseStorageDownloadTokens: uuidv4()
           }
-      },
-      public: true
+      }
   })
   const uint8 = new Uint8Array(pdf.buffer)
   writeStream.write(uint8)
@@ -397,8 +395,7 @@ app.post("/pdf/placement", async (req, res) => {
       const file = admin.storage().bucket().file(`contracts/${filename}.pdf`);
       const writeStream = file.createWriteStream({
           contentType: "application/pdf",
-          metadata: { metadata: { firebaseStorageDownloadTokens: uuidv4() } },
-          public: true
+          metadata: { metadata: { firebaseStorageDownloadTokens: uuidv4() } }
       });
 
       writeStream.write(new Uint8Array(pdf.buffer));
