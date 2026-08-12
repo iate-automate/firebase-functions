@@ -19,11 +19,10 @@ const os = require('os');
 const functions = require('firebase-functions/v2')
 const { onRequest } = require('firebase-functions/v2/https')
 const admin = require('firebase-admin')
-admin.initializeApp({
-    storageBucket: 'gs://iate-org.appspot.com'
-})
+admin.initializeApp()
 const db = admin.firestore()
 const storage = admin.storage()
+const storageBucketName = storage.bucket().name
 
 // PDF Generation
 const { generate } = require('@pdfme/generator')
@@ -142,10 +141,10 @@ app.post('/pdf/contract', async (req, res) => {
   
   const font = {
       signature: {
-        data: 'https://firebasestorage.googleapis.com/v0/b/iate-org.appspot.com/o/fonts%2Fkalam.ttf?alt=media'
+        data: `https://firebasestorage.googleapis.com/v0/b/${storageBucketName}/o/fonts%2Fkalam.ttf?alt=media`
       },
       regular: {
-          data: 'https://firebasestorage.googleapis.com/v0/b/iate-org.appspot.com/o/fonts%2Farial.ttf?alt=media',
+          data: `https://firebasestorage.googleapis.com/v0/b/${storageBucketName}/o/fonts%2Farial.ttf?alt=media`,
           fallback: true
         }
   }
@@ -308,7 +307,7 @@ app.post('/pdf/contract', async (req, res) => {
   const pdf = await generate({ template, plugins, inputs, options: { font } })
     
   // Save PDF to Firebase Storage
-  const fileUrl = `https://firebasestorage.googleapis.com/v0/b/iate-org.appspot.com/o/contracts%2F${filename}.pdf?alt=media`
+  const fileUrl = `https://firebasestorage.googleapis.com/v0/b/${storageBucketName}/o/contracts%2F${filename}.pdf?alt=media`
   const file = admin.storage().bucket().file(`contracts/${filename}.pdf`)
   const writeStream = file.createWriteStream({
       contentType: 'application/pdf',
@@ -344,13 +343,13 @@ app.post("/pdf/placement", async (req, res) => {
       // Fonts
       const font = {
         regular: {
-            data: "https://firebasestorage.googleapis.com/v0/b/iate-org.appspot.com/o/fonts%2Froboto.ttf?alt=media",
+            data: `https://firebasestorage.googleapis.com/v0/b/${storageBucketName}/o/fonts%2Froboto.ttf?alt=media`,
             fallback: true
         },
         signature: {
-            data: "https://firebasestorage.googleapis.com/v0/b/iate-org.appspot.com/o/fonts%2Fkalam.ttf?alt=media"
+            data: `https://firebasestorage.googleapis.com/v0/b/${storageBucketName}/o/fonts%2Fkalam.ttf?alt=media`
         }
-      };    
+      };
 
       const template = {
           schemas: [
@@ -394,7 +393,7 @@ app.post("/pdf/placement", async (req, res) => {
       const pdf = await generate({ template, plugins: { text, image }, inputs, options: { font } })
 
       // Save to Firebase Storage
-      const fileUrl = `https://firebasestorage.googleapis.com/v0/b/iate-org.appspot.com/o/contracts%2F${filename}.pdf?alt=media`;
+      const fileUrl = `https://firebasestorage.googleapis.com/v0/b/${storageBucketName}/o/contracts%2F${filename}.pdf?alt=media`;
       const file = admin.storage().bucket().file(`contracts/${filename}.pdf`);
       const writeStream = file.createWriteStream({
           contentType: "application/pdf",
